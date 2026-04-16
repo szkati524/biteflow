@@ -1,0 +1,7 @@
+/shelf/
+/workspace.xml
+target/
+*.jar
+*.war
+.idea/
+*.iml
