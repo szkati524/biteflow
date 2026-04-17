@@ -15,10 +15,10 @@ public class DataInitializer {
         return args -> {
             System.out.println("--- Inicjalizacja danych testowych ---");
 
-            productRepository.save(new Product(null, "Pizza Margarita", 32.00));
-            productRepository.save(new Product(null, "Pizza Pepperoni", 38.50));
-            productRepository.save(new Product(null, "Burger Wołowy", 29.00));
-            productRepository.save(new Product(null, "Coca Cola", 7.00));
+            productRepository.save(new Product(null, "Pizza Margarita","pizza_margarita", 32.00));
+            productRepository.save(new Product(null, "Pizza Pepperoni","pizza_pepperoni", 38.50));
+            productRepository.save(new Product(null, "Burger Wołowy","burger_wolowy" ,29.00));
+            productRepository.save(new Product(null, "Coca Cola","coca_cola", 7.00));
 
             System.out.println("--- Produkty dodane do bazy H2 ---");
         };

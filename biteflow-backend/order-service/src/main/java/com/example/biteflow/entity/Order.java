@@ -30,6 +30,7 @@ public class Order {
     private OrderStatus status;
 
     private LocalDateTime createdAt;
+    private String orderNumber;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<OrderItem> items = new ArrayList<>();
