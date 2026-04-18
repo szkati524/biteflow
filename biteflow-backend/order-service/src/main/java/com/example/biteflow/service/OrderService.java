@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -32,6 +33,7 @@ public class OrderService {
             private final ProductClient productClient;
             private final RabbitTemplate rabbitTemplate;
             private final WebClient.Builder webClientBuilder;
+            private final KafkaTemplate<String,Object> kafkaTemplate;
     @Transactional
     @CircuitBreaker(name = "productService",fallbackMethod = "fallbackProductInfo")
     public OrderResponse placeOrder(OrderRequest orderRequest) {
@@ -101,12 +103,13 @@ public class OrderService {
         OrderResponse response = mapToOrderResponse(order);
 
         rabbitTemplate.convertAndSend("order-exchange", "order-routing-key", response);
+        OrderAuditDto auditData = new OrderAuditDto(order.getOrderNumber(),order.getCustomerName(),order.getTotalAmount());
+        kafkaTemplate.send("order-audit-topic",order.getOrderNumber(),auditData);
         return response;
     }
-public OrderResponse fallbackProductInfo(OrderRequest orderRequest,RuntimeException runtimeException){
-log.error("Circuit Breaker zadziałał! Product Service jest niedostępny. Powód: {}",runtimeException.getMessage());
-
-throw new RuntimeException("Przepraszamy,usługa katalogu produktów jest chwilowo niedostępna. Spróbuj pózniej!");
+public OrderResponse fallbackProductInfo(OrderRequest orderRequest,Exception e){
+log.error("Circuit breaker zadziałał! Przyczyna{}", e.getMessage());
+throw new RuntimeException("Przepraszamy usługa katalogu produktów jest chwilowo niedostępna!");
 }
 
     public Order addOrder(Order order){

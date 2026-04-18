@@ -16,6 +16,7 @@
         <module>notification-service</module>
         <module>inventory-service</module>
         <module>ApiGateway</module>
+        <module>audit-service</module>
     </modules>
 
     <properties>
